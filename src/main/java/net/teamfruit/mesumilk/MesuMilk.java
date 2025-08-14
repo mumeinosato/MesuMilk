@@ -166,4 +166,28 @@ public final class MesuMilk extends JavaPlugin implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
+        String name = event.getPlayer().getName();
+        List<String> mesu = getConfig().getStringList("mesu");
+        Map<String, Object> osu = getConfig().getConfigurationSection("osu").getValues(false);
+
+        if (!mesu.contains(name) && !osu.containsKey(name)) {
+            boolean assignMesu = new Random().nextBoolean();
+            if (assignMesu) {
+                mesu.add(name);
+                getConfig().set("mesu", mesu);
+                event.getPlayer().sendMessage("あなたはメスです");
+            } else {
+                osu.put(name, 100); // 初期値例
+                getConfig().set("osu." + name, 1000);
+                event.getPlayer().sendMessage("あなたはオスです");
+            }
+            saveConfig();
+            reloadConfig();
+            this.mesu = getConfig().getStringList("mesu");
+            this.osu = getConfig().getConfigurationSection("osu").getValues(false);
+        }
+    }
+
 }
